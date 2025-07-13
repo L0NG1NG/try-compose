@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,20 +30,26 @@ data class NavigationItem(
 
 @Composable
 fun NavigationDrawer(
+    drawerState: DrawerState,
     navController:NavController,
     drawerItems: List<NavigationItem>,
-    onItemClick: (NavigationItem) -> Unit
+    onItemClick: (NavigationItem) -> Unit,
 ) {
-    LazyColumn {
-        items(drawerItems.size) { index ->
-            val item = drawerItems[index]
-            DrawerItem(
-                item = item,
-                selected = navController.currentDestination?.route == item.route,
-                onItemClick = onItemClick
-            )
+    ModalDrawerSheet(
+        drawerState = drawerState,
+    ) {
+        LazyColumn {
+            items(drawerItems.size) { index ->
+                val item = drawerItems[index]
+                DrawerItem(
+                    item = item,
+                    selected = navController.currentDestination?.route == item.route,
+                    onItemClick = onItemClick
+                )
+            }
         }
     }
+
 }
 
 @Composable

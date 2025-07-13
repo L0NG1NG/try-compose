@@ -1,10 +1,7 @@
 package com.longing.awesomeview.ui
 
-import android.R
-import android.R.attr.title
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,7 +26,7 @@ fun AwesomeViewNavGraph(modifier: Modifier = Modifier, navController: NavHostCon
         }
 
         composable(NavigationItems.Feature1.route) {
-            ScreenContent(NavigationItems.Home.title)
+            ScreenContent(NavigationItems.Feature1.title)
         }
     }
 }
@@ -41,7 +38,7 @@ fun ScreenContent(title: String) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "这是 $title 页面",
+            text = "$title 页面",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center

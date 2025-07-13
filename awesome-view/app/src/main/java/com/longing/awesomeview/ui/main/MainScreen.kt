@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.longing.awesomeview.ui.AwesomeViewNavGraph
 import kotlinx.coroutines.launch
@@ -41,20 +42,21 @@ fun MainScreen() {
     ModalNavigationDrawer(
         drawerContent = {
             NavigationDrawer(
+                drawerState = drawerState,
                 navController = navController,
                 drawerItems = drawerItems,
                 onItemClick = { item ->
                     selectedItem = item
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) {
+                        popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
                         launchSingleTop = true
                         restoreState = true
                     }
-
                     scope.launch { drawerState.close() }
-                }
+                },
+
             )
         }) {
         Scaffold(

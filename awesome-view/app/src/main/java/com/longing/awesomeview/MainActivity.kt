@@ -9,6 +9,7 @@ import com.longing.awesomeview.ui.theme.AwesomeViewTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent { AwesomeViewTheme { MainScreen() } }
     }
 }

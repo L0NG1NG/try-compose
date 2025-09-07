@@ -1,13 +1,18 @@
 package com.longing.awesomeview.ui.main
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,19 +25,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.longing.awesomeview.ui.AppDrawer
 import com.longing.awesomeview.ui.AwesomeViewNavGraph
+import com.longing.awesomeview.ui.NavigationItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    // 监听导航栈变化，确保路由状态能触发重组
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: NavigationItems.Home.route
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     var selectedItem by remember { mutableStateOf(NavigationItems.Home) }
 
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     val drawerItems = listOf(
         NavigationItems.Home,
@@ -41,33 +54,41 @@ fun MainScreen() {
 
     ModalNavigationDrawer(
         drawerContent = {
-            NavigationDrawer(
+            AppDrawer(
                 drawerState = drawerState,
-                navController = navController,
+                currentRoute = currentRoute,
                 drawerItems = drawerItems,
-                onItemClick = { item ->
-                    selectedItem = item
-                    navController.navigate(item.route) {
+                drawItemClicked = { drawerItem ->
+                    navController.navigate(drawerItem.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
                         launchSingleTop = true
                         restoreState = true
                     }
-                    scope.launch { drawerState.close() }
-                },
 
-            )
-        }) {
+                    selectedItem = drawerItem
+
+                    coroutineScope.launch { drawerState.close() }
+                })
+        },
+        drawerState = drawerState
+    ) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = selectedItem.title) },
+                    title = {
+                        Row (Modifier.fillMaxWidth().padding(end = 32.dp),Arrangement.Center){
+                            Text(text = selectedItem.title)
+                        }
+                    },
                     navigationIcon = {
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "菜单",
-                            modifier = Modifier.clickable { scope.launch { drawerState.open() } },
+                        Icon(
+                            imageVector = Icons.Rounded.Menu,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp).clickable {
+                                coroutineScope.launch { drawerState.open() }
+                            }
                         )
                     }
                 )
